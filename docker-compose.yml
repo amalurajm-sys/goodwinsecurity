@@ -1,0 +1,16 @@
+services:
+  web:
+    build: .
+    container_name: goodwinsecurity
+    restart: unless-stopped
+    env_file: .env
+    # Bound to localhost only; nginx on the host proxies the public domain to it.
+    # 3010 avoids clashing with other sites already using 3000.
+    ports:
+      - "127.0.0.1:${GOODWIN_PORT:-3010}:3000"
+    volumes:
+      - ./data:/app/data
+    mem_limit: 512m
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
