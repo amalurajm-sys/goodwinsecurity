@@ -31,6 +31,7 @@ function refreshSite() { revalidatePath("/", "layout"); }
 export async function loginAction(fd: FormData) {
   const ip = await clientIp();
   if (!rateLimit(`login:${ip}`, 8, 15 * 60_000)) fail("/admin/login", "Too many attempts. Please wait 15 minutes.");
+  if ((process.env.SESSION_SECRET ?? "").length < 32) fail("/admin/login", "Admin sign-in isn't configured on this server: set the SESSION_SECRET environment variable (at least 32 characters) and redeploy.");
   const s = checkCredentials(str(fd, "email", 200), String(fd.get("password") ?? "").slice(0, 200));
   if (!s) fail("/admin/login", "Incorrect email or password.");
   await startSession(s);

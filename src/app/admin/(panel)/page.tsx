@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { AdminHeader, Panel } from "@/components/admin";
-import { getDb } from "@/lib/db";
+import { EPHEMERAL_STORAGE, getDb } from "@/lib/db";
 import { mailConfigured } from "@/lib/mail";
 import { ENQUIRY_STATUSES, enquiryCounts, getEnquiries, getSettings } from "@/lib/queries";
 
@@ -46,6 +46,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
           <Panel>
             <h2 className="text-lg font-semibold">Setup checklist</h2>
             <ul className="mt-3 space-y-2 text-sm">
+              {EPHEMERAL_STORAGE && <li className="rounded-md bg-red-50 p-2 font-semibold text-red-800">⚠️ Storage on this host is temporary: enquiries, edits and uploads are lost when the server restarts. Use the Docker deployment (or set DATA_DIR to a persistent disk) before going live.</li>}
               <li>{mailConfigured() ? "✅ Email notifications configured" : "⚠️ Email (SMTP) not configured — enquiries are saved here only"}</li>
               <li>{missing.length ? `⚠️ Missing company details: ${missing.join(", ")}` : "✅ Company contact details entered"}</li>
               <li>{samples ? `⚠️ ${samples} sample products/projects still published` : "✅ No sample content"}</li>

@@ -4,7 +4,14 @@ import fs from "node:fs";
 import path from "node:path";
 import { seed } from "./seed";
 
-export const DATA_DIR = process.env.DATA_DIR || path.join(process.cwd(), "data");
+/**
+ * Serverless hosts (Vercel, AWS Lambda) run from a read-only file system where
+ * only /tmp is writable. There the database lives in /tmp, which is TEMPORARY:
+ * it is reset on every cold start and is not shared between instances.
+ * For permanent storage, run the Docker deployment (see DEPLOYMENT.md).
+ */
+export const EPHEMERAL_STORAGE = !process.env.DATA_DIR && Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+export const DATA_DIR = process.env.DATA_DIR || (EPHEMERAL_STORAGE ? "/tmp/goodwin-data" : path.join(process.cwd(), "data"));
 export const UPLOAD_DIR = path.join(DATA_DIR, "uploads");
 
 declare global {
